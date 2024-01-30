@@ -2,6 +2,8 @@ use askama::Template;
 use axum::{routing::get, Router};
 use tower_http::services::{ServeDir, ServeFile};
 
+pub mod routes;
+
 #[derive(Template)]
 #[template(path = "home.html")]
 struct HomeTemplate<'a> {
@@ -20,6 +22,9 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(home))
+        .route("/about", get(routes::about::about))
+        .route("/tracklists", get(routes::tracklists::tracklists))
+        .route("/contact", get(routes::contact::contact))
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"));
