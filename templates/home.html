@@ -1,3 +1,18 @@
 {% extends "index.html" %} {% block main %}
-<p>Hello, {{ example }}!</p>
+<div class="font-roboto flex flex-1 justify-center align-middle bg-[url('/assets/cosmic_background.webp')] bg-no-repeat bg-cover bg-center bg-fixed">
+  <section >
+    <div class="py-3 px-3 mt-10 my-6 mx-4 max-w-screen-lg text-center lg:py-6 lg:px-6 bg-gray-800 rounded-lg">
+        <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl text-white">Create and Manage Tracklists</h1>
+        <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">Cosmic Tracklists is a simple web app that allows you to create, manage, and discover new tracklists using a simple web interface.</p>
+        <div class="flex flex-col mb-3 lg:mb-6 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+            <a href="#" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-indigo-900 focus:ring-4 hover:bg-emerald-400 focus:ring-gray-800">
+                Learn more
+            </a>
+            <a href="#" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-indigo-900 focus:ring-4 hover:bg-emerald-400 focus:ring-gray-800">
+               Tracklists 
+            </a>  
+        </div>
+    </div>
+  </section>
+</div>
 {% endblock main %}

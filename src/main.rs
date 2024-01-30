@@ -6,14 +6,10 @@ pub mod routes;
 
 #[derive(Template)]
 #[template(path = "home.html")]
-struct HomeTemplate<'a> {
-    example: &'a str,
-}
+struct HomeTemplate {}
 
-async fn home() -> HomeTemplate<'static> {
-    HomeTemplate {
-        example: "Example content loaded from route!",
-    }
+async fn home() -> HomeTemplate {
+    HomeTemplate {}
 }
 
 #[tokio::main]

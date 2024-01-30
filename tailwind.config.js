@@ -2,7 +2,12 @@
 module.exports = {
   content: ["./templates/**/*.html"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        orbitron: ["Orbitron"],
+        roboto: ["Roboto"],
+      },
+    },
   },
   plugins: [],
 };
