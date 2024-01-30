@@ -1,0 +1,8 @@
+{% extends "index.html" %} {% block main %}
+<div class="flex flex-row flex-1">
+  <div class="flex w-1/5 min-w-60">{% include "routes/tracklists/sidenav.html" %}</div>
+  <div class="flex flex-1 w-4/5 p-2">
+    <p>Hello, {{ tracklists }}!<p>
+  </div>
+</div>
+{% endblock main %}
