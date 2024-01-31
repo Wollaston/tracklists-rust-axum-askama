@@ -22,12 +22,8 @@ async fn main() -> Result<(), sqlx::Error> {
     let app = Router::new()
         .route("/", get(home))
         .route("/about", get(routes::about::about))
-        .route("/tracklists", get(routes::tracklists::tracklists))
-        .route(
-            "/tracklists/artists",
-            get(routes::tracklists::artists::artists),
-        )
         .route("/contact", get(routes::contact::contact))
+        .merge(tracklists(TracklistState {}))
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
@@ -39,4 +35,23 @@ async fn main() -> Result<(), sqlx::Error> {
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
+}
+
+#[derive(Clone)]
+struct TracklistState {}
+
+fn tracklists<S>(state: TracklistState) -> Router<S> {
+    let tracklists_sub_routes = Router::new()
+        .route("/artists", get(routes::tracklists::artists::artists))
+        .route(
+            "/mix-series",
+            get(routes::tracklists::mix_series::mix_series),
+        )
+        .route("/songs", get(routes::tracklists::songs::songs))
+        .route("/docs", get(routes::tracklists::docs::docs));
+
+    Router::new()
+        .route("/tracklists", get(routes::tracklists::tracklists))
+        .nest("/tracklists", tracklists_sub_routes)
+        .with_state(state)
 }
