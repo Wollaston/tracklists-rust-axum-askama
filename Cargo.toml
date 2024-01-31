@@ -21,6 +21,12 @@ askama_axum = "0.4.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tower-http = { version = "0.5", features = ["fs", "trace"] }
+sqlx = { version = "0.7", features = [
+  "runtime-tokio-rustls",
+  "any",
+  "sqlite",
+  "uuid",
+] }
 
 [features]
 default = ["askama/default"]

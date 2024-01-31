@@ -1,13 +1,11 @@
 use askama::Template;
 
+pub mod artists;
+
 #[derive(Template)]
 #[template(path = "routes/tracklists.html")]
-pub struct TracklistsTemplate<'a> {
-    pub tracklists: &'a str,
-}
+pub struct TracklistsTemplate {}
 
-pub async fn tracklists() -> TracklistsTemplate<'static> {
-    TracklistsTemplate {
-        tracklists: "Example content loaded from tracklists!",
-    }
+pub async fn tracklists() -> TracklistsTemplate {
+    TracklistsTemplate {}
 }

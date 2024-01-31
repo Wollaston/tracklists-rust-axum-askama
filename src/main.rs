@@ -2,6 +2,7 @@ use askama::Template;
 use axum::{routing::get, Router};
 use tower_http::services::{ServeDir, ServeFile};
 
+pub mod db;
 pub mod routes;
 
 #[derive(Template)]
@@ -13,20 +14,29 @@ async fn home() -> HomeTemplate {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), sqlx::Error> {
     tracing_subscriber::fmt::init();
+
+    let pool = db::db().await.expect("Could not connect to sqlite DB.");
 
     let app = Router::new()
         .route("/", get(home))
         .route("/about", get(routes::about::about))
         .route("/tracklists", get(routes::tracklists::tracklists))
+        .route(
+            "/tracklists/artists",
+            get(routes::tracklists::artists::artists),
+        )
         .route("/contact", get(routes::contact::contact))
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
-        .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"));
+        .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
+        .with_state(pool);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
         .await
         .unwrap();
     axum::serve(listener, app).await.unwrap();
+
+    Ok(())
 }
