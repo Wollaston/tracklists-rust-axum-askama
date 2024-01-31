@@ -22,7 +22,6 @@ async fn main() -> Result<(), sqlx::Error> {
     let app = Router::new()
         .route("/", get(home))
         .route("/about", get(routes::about::about))
-        .route("/contact", get(routes::contact::contact))
         .merge(tracklists(TracklistState {}))
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
