@@ -27,6 +27,7 @@ async fn main() -> Result<(), sqlx::Error> {
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
+        .route_service("/htmx.js", ServeFile::new("public/scripts/htmx.min.js"))
         .with_state(pool);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
