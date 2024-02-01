@@ -1,4 +1,5 @@
 use askama::Template;
+use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
 use sqlx::SqlitePool;
 
@@ -11,10 +12,10 @@ pub mod songs;
 
 #[derive(Template)]
 #[template(path = "routes/tracklists/overview.html")]
-pub struct TracklistsMainTemplate {}
+pub struct TracklistsOverviewTemplate;
 
-pub async fn tracklists() -> TracklistsMainTemplate {
-    TracklistsMainTemplate {}
+pub async fn tracklists() -> impl IntoResponse {
+    TracklistsOverviewTemplate
 }
 
 pub fn tracklists_routes() -> Router<SqlitePool> {

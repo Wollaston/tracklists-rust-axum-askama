@@ -3,7 +3,7 @@
   <h1>Artists</h1>
     <ul>
       {% for artist in artists %}
-        {{artist|safe}}
+        {% include "routes/tracklists/artist.html" %}
       {% endfor %}
     </ul>
   <h1>End Artists</h1>

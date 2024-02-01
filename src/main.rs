@@ -1,4 +1,5 @@
 use askama::Template;
+use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
 use tower_http::services::{ServeDir, ServeFile};
 
@@ -7,10 +8,10 @@ pub mod routes;
 
 #[derive(Template)]
 #[template(path = "home.html")]
-struct HomeTemplate {}
+struct HomeTemplate;
 
-async fn home() -> HomeTemplate {
-    HomeTemplate {}
+async fn home() -> impl IntoResponse {
+    HomeTemplate
 }
 
 #[tokio::main]

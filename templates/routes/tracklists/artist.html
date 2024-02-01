@@ -2,9 +2,6 @@
   <h5
     class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
   >
-    Artist Name {{artist_name}}
+    Artist Name {{artist.artist_name}}
   </h5>
-  {% match real_name %} {% when Some with (name) %}
-  <p class="font-normal text-gray-700 dark:text-gray-400">{{name}}</p>
-  {% when None %} {% endmatch %}
 </div>
