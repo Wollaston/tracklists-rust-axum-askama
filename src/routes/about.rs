@@ -1,13 +1,10 @@
 use askama::Template;
+use askama_axum::IntoResponse;
 
 #[derive(Template)]
 #[template(path = "routes/about.html")]
-pub struct AboutTemplate<'a> {
-    pub about: &'a str,
-}
+pub struct AboutTemplate;
 
-pub async fn about() -> AboutTemplate<'static> {
-    AboutTemplate {
-        about: "Example content loaded from about!",
-    }
+pub async fn about() -> impl IntoResponse {
+    AboutTemplate
 }

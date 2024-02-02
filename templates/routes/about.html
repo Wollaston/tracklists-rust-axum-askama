@@ -1,3 +1,26 @@
 {% extends "index.html" %} {% block main %}
-<p>Hello, {{ about }}!</p>
+<!-- ====== About Section Start -->
+        <div class="container my-8 mx-auto md:px-6">
+            <section class="mb-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="mb-2 p-2 lg:col-span-1 md:px-3 lg:px-6">
+                        <h1 class="display:block font-mono min-w-fit mb-4 text-3xl lg:text-4xl font-extrabold leading-none text-gray-900">About Cosmic Tracklists</h1>
+                        <p class="mb-2 lg:text-xl text-gray-900 ">
+                        Cosmic Tracklists is a simple web app that allows anyone to manage, update, and design tracklists.
+                        </p>
+                        <p class="mb-2 lg:text-xl text-gray-900 ">
+                        It also provides basic information about artists, as well as the ability to relate information across artists and tracklists.
+                        </p>
+                         <p class="mb-2 lg:text-xl text-gray-900 ">
+                         All information is saved locally and can be exported or manipulated as needed.
+                        </p>
+                   </div>
+                    <div class="mb-4 p-2 lg:col-span-1 drop-shadow-xl rounded-lg h-full">
+                        <img class="object-scale-down drop-shadow-xl rounded-lg w-full min-h-0" src="/assets/cosmic_music_about.webp" alt="A swirling cosmic universe made of musical notes."/>
+                    </div>
+                </div>
+            </section>
+        </div>
+<!-- ====== About Section End -->
 {% endblock main %}
+
