@@ -1,7 +1,10 @@
 use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
-use tower_http::services::{ServeDir, ServeFile};
+use tower_http::{
+    services::{ServeDir, ServeFile},
+    trace::TraceLayer,
+};
 
 pub mod db;
 pub mod routes;
@@ -29,6 +32,7 @@ async fn main() -> Result<(), sqlx::Error> {
         .nest_service("/css", ServeDir::new("style/"))
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
         .route_service("/htmx.js", ServeFile::new("public/scripts/htmx.min.js"))
+        .layer(TraceLayer::new_for_http())
         .with_state(pool);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
