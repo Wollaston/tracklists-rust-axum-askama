@@ -1,11 +1,11 @@
 {% extends "routes/tracklists.html" %} {% block tracklists_main %}
 <div class="flex flex-col">
   <h1>Artists</h1>
-    <ul>
+    <div>
       {% for artist in artists %}
         {% include "routes/tracklists/artist.html" %}
       {% endfor %}
-    </ul>
+    </div>
   <h1>End Artists</h1>
 </div>
 {% endblock tracklists_main %}

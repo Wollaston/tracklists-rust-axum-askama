@@ -1,7 +1,10 @@
-<div>
-  <h5
-    class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+<div
+  class="block m-2 max-w-sm p-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+>
+  <a href="artists/{{artist.artist_id}}" class="text-white font-bold"
+    >{{artist.artist_name}}</a
   >
-    Artist Name {{artist.artist_name}}
-  </h5>
+  {% match artist.real_name %} {% when Some with (real_name) %}
+  <h1 class="text-white">Real Name: {{ real_name }}</h1>
+  {% when None %} {% endmatch %}
 </div>
