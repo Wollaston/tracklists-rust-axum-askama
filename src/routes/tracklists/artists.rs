@@ -1,6 +1,6 @@
 use askama::Template;
 use askama_axum::IntoResponse;
-use axum::extract::State;
+use axum::extract::{Path, State};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 
@@ -8,6 +8,12 @@ use sqlx::SqlitePool;
 #[template(path = "routes/tracklists/artists.html")]
 pub struct ArtistsTemplate {
     pub artists: Vec<Artist>,
+}
+
+#[derive(Template)]
+#[template(path = "routes/tracklists/artist_card.html")]
+pub struct ArtistCardTemplate {
+    artist: Artist,
 }
 
 #[derive(Template)]
@@ -23,12 +29,13 @@ pub struct Artist {
     pub real_name: Option<String>,
 }
 
-pub async fn artist(State(pool): State<SqlitePool>) -> impl IntoResponse {
+pub async fn artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> impl IntoResponse {
     let artist = sqlx::query_as::<_, Artist>(
         "
-    SELECT * FROM artists
+    SELECT * FROM artists WHERE artist_id = $1
     ",
     )
+    .bind(id)
     .fetch_one(&pool)
     .await
     .unwrap();

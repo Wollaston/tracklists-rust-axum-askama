@@ -21,6 +21,7 @@ pub async fn tracklists() -> impl IntoResponse {
 pub fn tracklists_routes() -> Router<SqlitePool> {
     Router::new()
         .route("/artists", get(routes::tracklists::artists::artists))
+        .route("/artists/:id", get(routes::tracklists::artists::artist))
         .route(
             "/mix-series",
             get(routes::tracklists::mix_series::mix_series),
