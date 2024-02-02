@@ -26,6 +26,12 @@ pub struct ArtistTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "routes/tracklists/artist_detail.html")]
+pub struct ArtistDetailTemplate {
+    artist: Artist,
+}
+
+#[derive(Template)]
 #[template(path = "routes/tracklists/create_artist.html")]
 pub struct CreateArtistTemplate;
 
@@ -42,8 +48,8 @@ pub struct CreateArtist {
     pub real_name: Option<String>,
 }
 
-pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> impl IntoResponse {
-    let artist = sqlx::query_as::<_, Artist>(
+pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> Artist {
+    sqlx::query_as::<_, Artist>(
         "
     SELECT * FROM artists WHERE artist_id = $1
     ",
@@ -51,9 +57,13 @@ pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> 
     .bind(id)
     .fetch_one(&pool)
     .await
-    .unwrap();
+    .unwrap()
+}
 
-    ArtistTemplate { artist }
+pub async fn artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> impl IntoResponse {
+    let artist = get_artist(axum::extract::State(pool), axum::extract::Path(id)).await;
+
+    ArtistDetailTemplate { artist }
 }
 
 pub async fn post_artist(
@@ -74,7 +84,9 @@ RETURNING *
     .unwrap()
     .last_insert_rowid();
 
-    get_artist(axum::extract::State(pool), axum::extract::Path(id)).await
+    let artist = get_artist(axum::extract::State(pool), axum::extract::Path(id)).await;
+
+    ArtistTemplate { artist }
 }
 
 pub async fn create_artist() -> impl IntoResponse {

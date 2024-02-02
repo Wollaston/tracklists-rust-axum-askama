@@ -29,7 +29,7 @@ pub fn tracklists_routes() -> Router<SqlitePool> {
             get(routes::tracklists::artists::create_artist)
                 .post(routes::tracklists::artists::post_artist),
         )
-        .route("/artists/:id", get(routes::tracklists::artists::get_artist))
+        .route("/artists/:id", get(routes::tracklists::artists::artist))
         .route(
             "/mix-series",
             get(routes::tracklists::mix_series::mix_series),
