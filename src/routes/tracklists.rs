@@ -19,7 +19,7 @@ pub async fn tracklists_overview_handler() -> impl IntoResponse {
     TracklistsOverviewTemplate
 }
 
-pub fn tracklists_routes() -> Router<SqlitePool> {
+pub fn routes() -> Router<SqlitePool> {
     Router::new()
         .route(
             "/overview",

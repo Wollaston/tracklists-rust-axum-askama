@@ -9,6 +9,7 @@ use tower_http::{
 pub mod db;
 pub mod error;
 pub mod routes;
+pub mod web;
 
 pub use self::error::{Error, Result};
 
@@ -39,7 +40,8 @@ async fn main() -> Result<()> {
     let app = Router::new()
         .route("/", get(home_handler))
         .route("/about", get(routes::about::about_handler))
-        .nest("/tracklists", routes::tracklists::tracklists_routes())
+        .nest("/tracklists", routes::tracklists::routes())
+        .nest("/api", web::routes())
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
