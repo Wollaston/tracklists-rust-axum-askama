@@ -1,6 +1,7 @@
 use askama::Template;
 use askama_axum::IntoResponse;
-use axum::{routing::get, Router};
+use axum::{middleware, response::Response, routing::get, Router};
+use tower_cookies::CookieManagerLayer;
 use tower_http::{
     services::{ServeDir, ServeFile},
     trace::TraceLayer,
@@ -47,6 +48,8 @@ async fn main() -> Result<()> {
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
         .route_service("/htmx.js", ServeFile::new("public/scripts/htmx.min.js"))
         .fallback(not_found_handler)
+        .layer(middleware::map_response(main_response_mapper))
+        .layer(CookieManagerLayer::new())
         .layer(TraceLayer::new_for_http())
         .with_state(pool);
 
@@ -56,6 +59,12 @@ async fn main() -> Result<()> {
 
     println!("->> Listening on {port}\n");
     axum::serve(listener, app).await.unwrap();
-
     Ok(())
+}
+
+async fn main_response_mapper(res: Response) -> Response {
+    println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
+    println!();
+
+    res
 }

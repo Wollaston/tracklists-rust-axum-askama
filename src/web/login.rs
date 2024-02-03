@@ -2,14 +2,15 @@ use axum::{routing::post, Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::SqlitePool;
+use tower_cookies::{Cookie, Cookies};
 
-use crate::{Error, Result};
+use crate::{web::AUTH_TOKEN, Error, Result};
 
 pub fn routes() -> Router<SqlitePool> {
     Router::new().route("/login", post(api_login))
 }
 
-async fn api_login(payload: Json<LoginPayload>) -> Result<Json<Value>> {
+async fn api_login(cookies: Cookies, payload: Json<LoginPayload>) -> Result<Json<Value>> {
     println!("->> {:<12} - api_login", "HANDLER");
 
     // TODO: Implement real db/auth logic
@@ -18,7 +19,8 @@ async fn api_login(payload: Json<LoginPayload>) -> Result<Json<Value>> {
         return Err(Error::LoginFail);
     }
 
-    // TODO: Set cookies
+    // TODO: Implement a real auth-token generation/signature
+    cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
 
     let body = Json(json!({
         "result": {

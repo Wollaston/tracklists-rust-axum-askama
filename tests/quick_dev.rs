@@ -14,5 +14,7 @@ async fn quick_dev() -> Result<()> {
 
     req_login.await?.print().await?;
 
+    hc.do_get("/").await?.print_no_body().await?;
+
     Ok(())
 }
