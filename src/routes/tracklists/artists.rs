@@ -49,6 +49,7 @@ pub struct CreateArtist {
 }
 
 pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> Artist {
+    println!("->> {:<12} - get_artist", "GET");
     sqlx::query_as::<_, Artist>(
         "
     SELECT * FROM artists WHERE artist_id = $1
@@ -60,7 +61,11 @@ pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> 
     .unwrap()
 }
 
-pub async fn artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> impl IntoResponse {
+pub async fn artist_detail_handler(
+    State(pool): State<SqlitePool>,
+    Path(id): Path<i64>,
+) -> impl IntoResponse {
+    println!("->> {:<12} - artist_detail", "HANDLER");
     let artist = get_artist(axum::extract::State(pool), axum::extract::Path(id)).await;
 
     ArtistDetailTemplate { artist }
@@ -70,6 +75,7 @@ pub async fn post_artist(
     State(pool): State<SqlitePool>,
     Form(input): Form<CreateArtist>,
 ) -> impl IntoResponse {
+    println!("->> {:<12} - post_artist", "POST");
     let id = sqlx::query(
         "
     INSERT INTO artists (artist_name, real_name)
@@ -90,10 +96,12 @@ RETURNING *
 }
 
 pub async fn create_artist() -> impl IntoResponse {
+    println!("->> {:<12} - creat_artist_handler", "HANDLER");
     CreateArtistTemplate
 }
 
 pub async fn get_artists(State(pool): State<SqlitePool>) -> impl IntoResponse {
+    println!("->> {:<12} - get_artists", "GET");
     let artists = sqlx::query_as::<_, Artist>(
         "
     SELECT * FROM artists

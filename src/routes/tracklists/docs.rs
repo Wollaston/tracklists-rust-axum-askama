@@ -5,6 +5,7 @@ use askama_axum::IntoResponse;
 #[template(path = "routes/tracklists/docs.html")]
 pub struct DocsTemplate;
 
-pub async fn docs() -> impl IntoResponse {
+pub async fn docs_handler() -> impl IntoResponse {
+    println!("->> {:<12} - docs_handler", "HANDLER");
     DocsTemplate
 }

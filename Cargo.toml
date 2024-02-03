@@ -30,6 +30,9 @@ sqlx = { version = "0.7", features = [
 anyhow = "1.0.79"
 serde = { version = "1.0.196", features = ["derive"] }
 
+[dev-dependencies]
+httpc-test = "0.1.9"
+
 [features]
 default = ["askama/default"]
 config = ["askama/config"]

@@ -5,6 +5,7 @@ use askama_axum::IntoResponse;
 #[template(path = "routes/tracklists/songs.html")]
 pub struct SongsTemplate;
 
-pub async fn songs() -> impl IntoResponse {
+pub async fn songs_handler() -> impl IntoResponse {
+    println!("->> {:<12} - songs_handler", "HANDLER");
     SongsTemplate
 }
