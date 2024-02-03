@@ -5,7 +5,6 @@ use axum::{
     Form,
 };
 use serde::{Deserialize, Serialize};
-use sqlx::SqlitePool;
 
 use crate::AppState;
 

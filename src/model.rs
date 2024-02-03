@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use crate::Result;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
