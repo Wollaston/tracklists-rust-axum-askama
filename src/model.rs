@@ -1,5 +1,5 @@
 use crate::Result;
-use axum::Form;
+use axum::{extract::Path, Form};
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
@@ -79,3 +79,71 @@ impl ModelController {
 }
 
 // endregion: --song
+
+//  region:     --- artist
+
+#[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
+pub struct Artist {
+    pub artist_id: i64,
+    pub artist_name: String,
+    pub real_name: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ArtistForCreate {
+    pub artist_name: String,
+    pub real_name: Option<String>,
+}
+
+impl ModelController {
+    pub async fn get_artist(&self, Path(id): Path<i64>) -> Result<Artist> {
+        println!("->> {:<12} - get_artist", "GET");
+
+        let artist = sqlx::query_as::<_, Artist>(
+            "
+    SELECT * FROM artists WHERE artist_id = $1
+    ",
+        )
+        .bind(id)
+        .fetch_one(&self.pool)
+        .await
+        .unwrap();
+
+        Ok(artist)
+    }
+
+    pub async fn get_artists(&self) -> Result<Vec<Artist>> {
+        println!("->> {:<12} - get_artists", "GET");
+
+        let artists = sqlx::query_as::<_, Artist>(
+            "
+    SELECT * FROM artists
+    ",
+        )
+        .fetch_all(&self.pool)
+        .await
+        .unwrap();
+
+        Ok(artists)
+    }
+
+    pub async fn create_artist(&self, Form(input): Form<ArtistForCreate>) -> Result<Artist> {
+        println!("->> {:<12} - post_artist", "POST");
+        let artist = sqlx::query_as::<_, Artist>(
+            "
+            INSERT INTO artists (artist_name, real_name)
+            values($1, $2)
+            RETURNING *
+            ",
+        )
+        .bind(input.artist_name)
+        .bind(input.real_name.unwrap())
+        .fetch_one(&self.pool)
+        .await
+        .unwrap();
+
+        Ok(artist)
+    }
+}
+
+//  endregion:  --- artist
