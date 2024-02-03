@@ -8,6 +8,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 
 use crate::AppState;
+use crate::Result;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -17,31 +18,31 @@ pub fn routes() -> Router<AppState> {
 }
 
 #[derive(Template)]
-#[template(path = "routes/tracklists/artists.html")]
+#[template(path = "routes/tracklists/artists/artists.html")]
 pub struct ArtistsTemplate {
     pub artists: Vec<Artist>,
 }
 
 #[derive(Template)]
-#[template(path = "routes/tracklists/artist_card.html")]
+#[template(path = "routes/tracklists/artists/artist_card.html")]
 pub struct ArtistCardTemplate {
     artist: Artist,
 }
 
 #[derive(Template)]
-#[template(path = "routes/tracklists/artist.html")]
+#[template(path = "routes/tracklists/artists/artist.html")]
 pub struct ArtistTemplate {
     artist: Artist,
 }
 
 #[derive(Template)]
-#[template(path = "routes/tracklists/artist_detail.html")]
+#[template(path = "routes/tracklists/artists/artist_detail.html")]
 pub struct ArtistDetailTemplate {
     artist: Artist,
 }
 
 #[derive(Template)]
-#[template(path = "routes/tracklists/create_artist.html")]
+#[template(path = "routes/tracklists/artists/create_artist.html")]
 pub struct CreateArtistTemplate;
 
 #[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
@@ -57,9 +58,9 @@ pub struct CreateArtist {
     pub real_name: Option<String>,
 }
 
-pub async fn get_artist(State(state): State<AppState>, Path(id): Path<i64>) -> Artist {
+pub async fn get_artist(State(state): State<AppState>, Path(id): Path<i64>) -> Result<Artist> {
     println!("->> {:<12} - get_artist", "GET");
-    sqlx::query_as::<_, Artist>(
+    let artist = sqlx::query_as::<_, Artist>(
         "
     SELECT * FROM artists WHERE artist_id = $1
     ",
@@ -67,7 +68,9 @@ pub async fn get_artist(State(state): State<AppState>, Path(id): Path<i64>) -> A
     .bind(id)
     .fetch_one(&state.mc.pool)
     .await
-    .unwrap()
+    .unwrap();
+
+    Ok(artist)
 }
 
 pub async fn artist_detail_handler(
@@ -75,7 +78,9 @@ pub async fn artist_detail_handler(
     Path(id): Path<i64>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - artist_detail_handler", "HANDLER");
-    let artist = get_artist(axum::extract::State(state), axum::extract::Path(id)).await;
+    let artist = get_artist(axum::extract::State(state), axum::extract::Path(id))
+        .await
+        .unwrap();
 
     ArtistDetailTemplate { artist }
 }
@@ -99,7 +104,9 @@ RETURNING *
     .unwrap()
     .last_insert_rowid();
 
-    let artist = get_artist(axum::extract::State(state), axum::extract::Path(id)).await;
+    let artist = get_artist(axum::extract::State(state), axum::extract::Path(id))
+        .await
+        .unwrap();
 
     ArtistTemplate { artist }
 }

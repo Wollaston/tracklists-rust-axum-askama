@@ -1,4 +1,5 @@
 use crate::Result;
+use axum::Form;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
@@ -21,27 +22,41 @@ impl ModelController {
 
 // region: --- song
 
-#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Song {
     pub uuid: Uuid,
     pub title: String,
     pub created_date: DateTime<Utc>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct SongForCreate {
     pub title: String,
 }
 
 impl ModelController {
-    pub async fn create_song(&self, song_fc: SongForCreate) -> Result<Song> {
+    pub async fn get_songs(&self) -> Result<Vec<Song>> {
+        println!("->> {:<12} - get_songs", "GET");
+        let songs = sqlx::query_as::<_, Song>(
+            "
+    SELECT * FROM songs 
+    ",
+        )
+        .fetch_all(&self.pool)
+        .await
+        .unwrap();
+
+        Ok(songs)
+    }
+
+    pub async fn create_song(&self, Form(input): Form<SongForCreate>) -> Result<Song> {
+        println!("->> {:<12} - create_song", "POST");
+
         let song = Song {
             uuid: Uuid::new_v4(),
-            title: song_fc.title,
+            title: input.title,
             created_date: Utc::now(),
         };
-
-        println!("->> {:<12} - create_song", "POST");
 
         let returned_song = sqlx::query_as::<_, Song>(
             "
