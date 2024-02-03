@@ -35,6 +35,22 @@ pub struct SongForCreate {
 }
 
 impl ModelController {
+    pub async fn get_song(&self, Path(uuid): Path<Uuid>) -> Result<Song> {
+        println!("->> {:<12} - get_song", "GET");
+
+        let song = sqlx::query_as::<_, Song>(
+            "
+        SELECT * FROM songs WHERE uuid = $1
+        ",
+        )
+        .bind(uuid)
+        .fetch_one(&self.pool)
+        .await
+        .unwrap();
+
+        Ok(song)
+    }
+
     pub async fn get_songs(&self) -> Result<Vec<Song>> {
         println!("->> {:<12} - get_songs", "GET");
         let songs = sqlx::query_as::<_, Song>(
