@@ -4,9 +4,9 @@ use serde_json::{json, Value};
 use sqlx::SqlitePool;
 use tower_cookies::{Cookie, Cookies};
 
-use crate::{web::AUTH_TOKEN, Error, Result};
+use crate::{web::AUTH_TOKEN, AppState, Error, Result};
 
-pub fn routes() -> Router<SqlitePool> {
+pub fn routes() -> Router<AppState> {
     Router::new().route("/login", post(api_login))
 }
 

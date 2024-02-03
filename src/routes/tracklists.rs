@@ -1,9 +1,8 @@
 use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
-use sqlx::SqlitePool;
 
-use crate::routes;
+use crate::{routes, AppState};
 
 pub mod artists;
 pub mod docs;
@@ -19,7 +18,7 @@ pub async fn tracklists_overview_handler() -> impl IntoResponse {
     TracklistsOverviewTemplate
 }
 
-pub fn routes() -> Router<SqlitePool> {
+pub fn routes() -> Router<AppState> {
     Router::new()
         .route(
             "/overview",

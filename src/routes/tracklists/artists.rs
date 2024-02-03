@@ -7,6 +7,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 
+use crate::AppState;
+
 #[derive(Template)]
 #[template(path = "routes/tracklists/artists.html")]
 pub struct ArtistsTemplate {
@@ -48,7 +50,7 @@ pub struct CreateArtist {
     pub real_name: Option<String>,
 }
 
-pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> Artist {
+pub async fn get_artist(State(state): State<AppState>, Path(id): Path<i64>) -> Artist {
     println!("->> {:<12} - get_artist", "GET");
     sqlx::query_as::<_, Artist>(
         "
@@ -56,23 +58,23 @@ pub async fn get_artist(State(pool): State<SqlitePool>, Path(id): Path<i64>) -> 
     ",
     )
     .bind(id)
-    .fetch_one(&pool)
+    .fetch_one(&state.mc.pool)
     .await
     .unwrap()
 }
 
 pub async fn artist_detail_handler(
-    State(pool): State<SqlitePool>,
+    State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - artist_detail_handler", "HANDLER");
-    let artist = get_artist(axum::extract::State(pool), axum::extract::Path(id)).await;
+    let artist = get_artist(axum::extract::State(state), axum::extract::Path(id)).await;
 
     ArtistDetailTemplate { artist }
 }
 
 pub async fn post_artist(
-    State(pool): State<SqlitePool>,
+    State(state): State<AppState>,
     Form(input): Form<CreateArtist>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - post_artist", "POST");
@@ -85,12 +87,12 @@ RETURNING *
     )
     .bind(input.artist_name)
     .bind(input.real_name.unwrap())
-    .execute(&pool)
+    .execute(&state.mc.pool)
     .await
     .unwrap()
     .last_insert_rowid();
 
-    let artist = get_artist(axum::extract::State(pool), axum::extract::Path(id)).await;
+    let artist = get_artist(axum::extract::State(state), axum::extract::Path(id)).await;
 
     ArtistTemplate { artist }
 }
@@ -100,14 +102,14 @@ pub async fn create_artist() -> impl IntoResponse {
     CreateArtistTemplate
 }
 
-pub async fn get_artists(State(pool): State<SqlitePool>) -> impl IntoResponse {
+pub async fn get_artists(State(state): State<AppState>) -> impl IntoResponse {
     println!("->> {:<12} - get_artists", "GET");
     let artists = sqlx::query_as::<_, Artist>(
         "
     SELECT * FROM artists
     ",
     )
-    .fetch_all(&pool)
+    .fetch_all(&state.mc.pool)
     .await
     .unwrap();
 

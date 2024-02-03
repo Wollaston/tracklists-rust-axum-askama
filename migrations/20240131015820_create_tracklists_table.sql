@@ -10,4 +10,9 @@ VALUES
   ("Tiësto", "Tijs Michiel Verwest"),
   ("Armin van Buuren", "Armin van Buuren");
 
+CREATE TABLE IF NOT EXISTS songs (
+  uuid TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  created_date DATETIME NOT NULL
+);
 

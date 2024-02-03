@@ -1,6 +1,7 @@
 use askama::Template;
 use askama_axum::IntoResponse;
-use axum::{middleware, response::Response, routing::get, Router};
+use axum::{extract::FromRef, middleware, response::Response, routing::get, Router};
+use model::ModelController;
 use tower_cookies::CookieManagerLayer;
 use tower_http::{
     services::{ServeDir, ServeFile},
@@ -9,6 +10,7 @@ use tower_http::{
 
 pub mod db;
 pub mod error;
+pub mod model;
 pub mod routes;
 pub mod web;
 
@@ -32,11 +34,20 @@ async fn not_found_handler() -> impl IntoResponse {
     NotFoundTemplate
 }
 
+#[derive(Clone, FromRef)]
+pub struct AppState {
+    pub mc: ModelController,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
     let pool = db::db().await.expect("Could not connect to sqlite DB.");
+
+    let app_state = AppState {
+        mc: ModelController::new(pool).await.unwrap(),
+    };
 
     let app = Router::new()
         .route("/", get(home_handler))
@@ -51,7 +62,7 @@ async fn main() -> Result<()> {
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())
         .layer(TraceLayer::new_for_http())
-        .with_state(pool);
+        .with_state(app_state);
 
     let port = "127.0.0.1:8080";
 
