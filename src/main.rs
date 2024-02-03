@@ -7,7 +7,10 @@ use tower_http::{
 };
 
 pub mod db;
+pub mod error;
 pub mod routes;
+
+pub use self::error::{Error, Result};
 
 #[derive(Template)]
 #[template(path = "home.html")]
@@ -28,7 +31,7 @@ async fn not_found_handler() -> impl IntoResponse {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), sqlx::Error> {
+async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
     let pool = db::db().await.expect("Could not connect to sqlite DB.");

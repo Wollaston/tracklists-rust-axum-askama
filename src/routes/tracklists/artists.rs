@@ -65,7 +65,7 @@ pub async fn artist_detail_handler(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
 ) -> impl IntoResponse {
-    println!("->> {:<12} - artist_detail", "HANDLER");
+    println!("->> {:<12} - artist_detail_handler", "HANDLER");
     let artist = get_artist(axum::extract::State(pool), axum::extract::Path(id)).await;
 
     ArtistDetailTemplate { artist }
