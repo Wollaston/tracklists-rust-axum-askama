@@ -2,11 +2,19 @@ use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{
     extract::{Path, State},
-    Form,
+    routing::get,
+    Form, Router,
 };
 use serde::{Deserialize, Serialize};
 
 use crate::AppState;
+
+pub fn routes() -> Router<AppState> {
+    Router::new()
+        .route("/artists", get(get_artists))
+        .route("/artists/create", get(create_artist).post(post_artist))
+        .route("/artists/:id", get(artist_detail_handler))
+}
 
 #[derive(Template)]
 #[template(path = "routes/tracklists/artists.html")]

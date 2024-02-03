@@ -1,11 +1,18 @@
 use askama::Template;
 use askama_axum::IntoResponse;
+use axum::{routing::get, Router};
+
+use crate::AppState;
+
+pub fn routes() -> Router<AppState> {
+    Router::new().route("/docs", get(docs_handler))
+}
 
 #[derive(Template)]
 #[template(path = "routes/tracklists/docs.html")]
-pub struct DocsTemplate;
+struct DocsTemplate;
 
-pub async fn docs_handler() -> impl IntoResponse {
+async fn docs_handler() -> impl IntoResponse {
     println!("->> {:<12} - docs_handler", "HANDLER");
     DocsTemplate
 }
