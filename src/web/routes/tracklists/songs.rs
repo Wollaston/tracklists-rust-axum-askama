@@ -14,7 +14,10 @@ use crate::{
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/songs", get(songs_handler))
-        .route("/songs/create", get(create_songs_handler).post(create_song))
+        .route(
+            "/songs/create",
+            get(create_song_handler).post(create_song_post),
+        )
         .route("/songs/:uuid", get(song_detail_handler))
 }
 
@@ -54,13 +57,13 @@ async fn songs_handler(State(state): State<AppState>) -> impl IntoResponse {
     SongsTemplate { songs }
 }
 
-async fn create_songs_handler() -> impl IntoResponse {
+async fn create_song_handler() -> impl IntoResponse {
     println!("->> {:<12} - create_songs_handler", "HANDLER");
 
     CreateSongTemplate
 }
 
-async fn create_song(
+async fn create_song_post(
     State(state): State<AppState>,
     input: Form<SongForCreate>,
 ) -> impl IntoResponse {
