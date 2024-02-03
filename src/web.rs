@@ -1,5 +1,4 @@
 use axum::Router;
-use sqlx::SqlitePool;
 
 use crate::AppState;
 

@@ -1,7 +1,6 @@
 use axum::{routing::post, Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use sqlx::SqlitePool;
 use tower_cookies::{Cookie, Cookies};
 
 use crate::{web::AUTH_TOKEN, AppState, Error, Result};
