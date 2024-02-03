@@ -1,6 +1,4 @@
-use askama::Template;
-use askama_axum::IntoResponse;
-use axum::{extract::FromRef, middleware, response::Response, routing::get, Router};
+use axum::{extract::FromRef, middleware, response::Response, Router};
 use model::ModelController;
 use tower_cookies::CookieManagerLayer;
 use tower_http::{
@@ -14,25 +12,6 @@ pub mod model;
 pub mod web;
 
 pub use self::error::{Error, Result};
-
-#[derive(Template)]
-#[template(path = "home.html")]
-struct HomeTemplate;
-
-async fn home_handler() -> impl IntoResponse {
-    println!("->> {:<12} - home_handler", "HANDLER");
-    HomeTemplate
-}
-
-#[derive(Template)]
-#[template(path = "not_found.html")]
-struct NotFoundTemplate;
-
-async fn not_found_handler() -> impl IntoResponse {
-    println!("->> {:<12} - not_found_handler", "HANDLER");
-    NotFoundTemplate
-}
-
 #[derive(Clone, FromRef)]
 pub struct AppState {
     pub mc: ModelController,
@@ -49,13 +28,12 @@ async fn main() -> Result<()> {
     };
 
     let app = Router::new()
-        .route("/", get(home_handler))
         .merge(web::routes())
         .nest_service("/assets", ServeDir::new("public/assets/"))
         .nest_service("/css", ServeDir::new("style/"))
         .route_service("/favicon.ico", ServeFile::new("public/favicon.ico"))
         .route_service("/htmx.js", ServeFile::new("public/scripts/htmx.min.js"))
-        .fallback(not_found_handler)
+        .fallback(web::routes::not_found::not_found_handler)
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())
         .layer(TraceLayer::new_for_http())
