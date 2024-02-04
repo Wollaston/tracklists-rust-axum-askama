@@ -1,0 +1,17 @@
+{% extends "index.html" %} {% block main %}
+<div id="login-form" class="mt-8 flex flex-col align-middle">
+  <form action="/login" method="post">
+    <label for="username" class="block">
+      Username:
+        <input type="text" name="username">
+    </label>
+    <label for="password" class="block">
+      Password:
+        <input type="text" name="password">
+    </label>
+
+    <button class="block" hx-trigger="click" hx-post="/login" hx-target="#login-form" hx=swap="outerHTML" type="submit">Submit</button>
+</form>
+</div>
+{% endblock main %}
+

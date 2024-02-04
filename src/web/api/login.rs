@@ -1,33 +1,45 @@
-use axum::{routing::post, Json, Router};
+use askama::Template;
+use askama_axum::IntoResponse;
+use axum::{routing::get, Form, Router};
 use serde::Deserialize;
-use serde_json::{json, Value};
 use tower_cookies::{Cookie, Cookies};
 
-use crate::{web::AUTH_TOKEN, AppState, Error, Result};
+use crate::{web::AUTH_TOKEN, AppState};
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/login", post(api_login))
+    Router::new().route("/login", get(login_handler).post(api_login))
 }
 
-async fn api_login(cookies: Cookies, payload: Json<LoginPayload>) -> Result<Json<Value>> {
+#[derive(Template)]
+#[template(path = "routes/login/login.html")]
+pub struct LoginTemplate;
+
+pub async fn login_handler() -> impl IntoResponse {
+    println!("->> {:<12} - login_handler", "HANDLER");
+    LoginTemplate
+}
+
+#[derive(Template)]
+#[template(path = "routes/login/login_fail.html")]
+pub struct LoginFailTemplate;
+
+#[derive(Template)]
+#[template(path = "routes/login/login_success.html")]
+pub struct LoginSuccessTemplate;
+
+async fn api_login(cookies: Cookies, Form(payload): Form<LoginPayload>) -> impl IntoResponse {
     println!("->> {:<12} - api_login", "HANDLER");
 
     // TODO: Implement real db/auth logic
 
     if payload.username != "demo1" || payload.password != "welcome" {
-        return Err(Error::LoginFail);
+        LoginFailTemplate.into_response()
+    } else {
+        // TODO: Implement a real auth-token generation/signature
+        cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
+
+        LoginSuccessTemplate.into_response()
     }
-
-    // TODO: Implement a real auth-token generation/signature
-    cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
-
-    let body = Json(json!({
-        "result": {
-        "success": true
-    }
-    }));
-
-    Ok(body)
 }
 
 #[derive(Debug, Deserialize)]
