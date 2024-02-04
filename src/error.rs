@@ -10,6 +10,7 @@ pub enum Error {
 
     //  --  Auth Errors
     AuthFailNoAuthTokenCookie,
+    AuthFailTokenWrongFormat,
 }
 
 impl IntoResponse for Error {

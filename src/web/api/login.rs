@@ -33,7 +33,7 @@ async fn api_login(cookies: Cookies, Form(payload): Form<LoginPayload>) -> impl 
     // TODO: Implement real db/auth logic
 
     if payload.username != "demo1" || payload.password != "welcome" {
-        LoginFailTemplate.into_response()
+        (http::StatusCode::INTERNAL_SERVER_ERROR, LoginFailTemplate).into_response()
     } else {
         // TODO: Implement a real auth-token generation/signature
         cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
