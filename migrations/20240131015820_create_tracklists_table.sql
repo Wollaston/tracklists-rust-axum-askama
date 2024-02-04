@@ -1,17 +1,15 @@
 -- Add migration script here
 CREATE TABLE IF NOT EXISTS artists (
-	artist_id INTEGER PRIMARY KEY,
+	uuid TEXT PRIMARY KEY,
+  creator_uuid TEXT NOT NULL,
 	artist_name TEXT NOT NULL,
-	real_name TEXT
+	real_name TEXT,
+  created_date DATETIME NOT NULL
 );
-
-INSERT INTO artists (artist_name, real_name)
-VALUES 
-  ("Tiësto", "Tijs Michiel Verwest"),
-  ("Armin van Buuren", "Armin van Buuren");
 
 CREATE TABLE IF NOT EXISTS songs (
   uuid TEXT PRIMARY KEY,
+  creator_uuid TEXT NOT NULL,
   title TEXT NOT NULL,
   created_date DATETIME NOT NULL
 );

@@ -1,12 +1,12 @@
 {% extends "routes/tracklists.html" %} {% block tracklists_main %}
 <div id="create-song-form" class="flex flex-col">
-  <form action="/tracklists/songs/create" method="post">
+  <form action="/api/tracklists/songs/create" method="post">
     <label for="title">
         Enter Song Title:
         <input type="text" name="title">
     </label>
 
-    <button hx-trigger="click" hx-post="/tracklists/songs/create" hx-target="#create-song-form" hx-swap="outerHTML" type="submit">Submit</button>
+    <button hx-trigger="click" hx-post="/api/tracklists/songs/create" hx-target="#create-song-form" hx-swap="outerHTML" type="submit">Submit</button>
 </form>
 </div>
 {% endblock tracklists_main %}

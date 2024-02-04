@@ -12,6 +12,10 @@ pub fn routes() -> Router<AppState> {
     Router::new().nest("/tracklists", sub_routes())
 }
 
+pub fn api_routes() -> Router<AppState> {
+    Router::new().nest("/tracklists", api_sub_routes())
+}
+
 fn sub_routes() -> Router<AppState> {
     Router::new()
         .merge(overview::routes())
@@ -19,4 +23,10 @@ fn sub_routes() -> Router<AppState> {
         .merge(mix_series::routes())
         .merge(songs::routes())
         .merge(docs::routes())
+}
+
+fn api_sub_routes() -> Router<AppState> {
+    Router::new()
+        .merge(artists::api_routes())
+        .merge(songs::api_routes())
 }

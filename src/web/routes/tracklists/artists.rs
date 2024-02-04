@@ -2,21 +2,22 @@ use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{
     extract::{Path, State},
-    routing::get,
+    routing::{get, post},
     Form, Router,
 };
 
-use crate::model::Artist;
+use crate::{ctx::Ctx, model::Artist};
 use crate::{model::ArtistForCreate, AppState};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/artists", get(artists_handler))
-        .route(
-            "/artists/create",
-            get(create_artist_handler).post(create_artist_post),
-        )
-        .route("/artists/:id", get(artist_detail_handler))
+        .route("/artists/:uuid", get(artist_detail_handler))
+        .route("/artists/create", get(create_artist_handler))
+}
+
+pub fn api_routes() -> Router<AppState> {
+    Router::new().route("/artists/create", post(create_artist_post))
 }
 
 #[derive(Template)]
@@ -49,29 +50,31 @@ pub struct CreateArtistTemplate;
 
 pub async fn artist_detail_handler(
     State(state): State<AppState>,
-    id: Path<i64>,
+    uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - artist_detail_handler", "HANDLER");
-    let artist = state.mc.get_artist(id).await.unwrap();
+    let artist = state.mc.get_artist(uuid).await.unwrap();
 
     ArtistDetailTemplate { artist }
 }
 
 pub async fn create_artist_post(
     State(state): State<AppState>,
+    ctx: Ctx,
     input: Form<ArtistForCreate>,
 ) -> impl IntoResponse {
-    let artist = state.mc.create_artist(input).await.unwrap();
+    let artist = state.mc.create_artist(ctx, input).await.unwrap();
 
     ArtistTemplate { artist }
 }
 
 pub async fn create_artist_handler() -> impl IntoResponse {
-    println!("->> {:<12} - creat_artist_handler", "HANDLER");
+    println!("->> {:<12} - create_artist_handler", "HANDLER");
     CreateArtistTemplate
 }
 
 pub async fn artists_handler(State(state): State<AppState>) -> impl IntoResponse {
+    println!("->> {:<12} - artists_handler", "HANDLER");
     let artists = state.mc.get_artists().await.unwrap();
 
     ArtistsTemplate { artists }

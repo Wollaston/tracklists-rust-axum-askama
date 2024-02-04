@@ -36,7 +36,9 @@ async fn api_login(cookies: Cookies, Form(payload): Form<LoginPayload>) -> impl 
         (http::StatusCode::INTERNAL_SERVER_ERROR, LoginFailTemplate).into_response()
     } else {
         // TODO: Implement a real auth-token generation/signature
-        cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
+        let user_id = uuid::Uuid::new_v4();
+        cookies.add(Cookie::new(AUTH_TOKEN, format!("{}.exp.sign", user_id)));
+        println!("{:?}", cookies.get(AUTH_TOKEN));
 
         LoginSuccessTemplate.into_response()
     }

@@ -2,11 +2,12 @@ use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{
     extract::{Path, State},
-    routing::get,
+    routing::{get, post},
     Form, Router,
 };
 
 use crate::{
+    ctx::Ctx,
     model::{Song, SongForCreate},
     AppState,
 };
@@ -14,11 +15,12 @@ use crate::{
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/songs", get(songs_handler))
-        .route(
-            "/songs/create",
-            get(create_song_handler).post(create_song_post),
-        )
         .route("/songs/:uuid", get(song_detail_handler))
+        .route("/songs/create", get(create_song_handler))
+}
+
+pub fn api_routes() -> Router<AppState> {
+    Router::new().route("/songs/create", post(create_song_post))
 }
 
 #[derive(Template)]
@@ -65,11 +67,12 @@ async fn create_song_handler() -> impl IntoResponse {
 
 async fn create_song_post(
     State(state): State<AppState>,
+    ctx: Ctx,
     input: Form<SongForCreate>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - create_song_handler", "HANDLER");
 
-    let song = state.mc.create_song(input).await.unwrap();
+    let song = state.mc.create_song(ctx, input).await.unwrap();
 
     SongTemplate { song }
 }

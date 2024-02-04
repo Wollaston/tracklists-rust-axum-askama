@@ -1,4 +1,4 @@
-use crate::Result;
+use crate::{ctx::Ctx, Result};
 use axum::{extract::Path, Form};
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -25,6 +25,7 @@ impl ModelController {
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Song {
     pub uuid: Uuid,
+    pub creator_uuid: Uuid,
     pub title: String,
     pub created_date: DateTime<Utc>,
 }
@@ -65,32 +66,32 @@ impl ModelController {
         Ok(songs)
     }
 
-    pub async fn create_song(&self, Form(input): Form<SongForCreate>) -> Result<Song> {
+    pub async fn create_song(&self, ctx: Ctx, Form(input): Form<SongForCreate>) -> Result<Song> {
         println!("->> {:<12} - create_song", "POST");
 
         let song = Song {
             uuid: Uuid::new_v4(),
+            creator_uuid: ctx.user_id(),
             title: input.title,
             created_date: Utc::now(),
         };
 
         let returned_song = sqlx::query_as::<_, Song>(
             "
-    INSERT INTO songs (uuid, title, created_date)
-        values($1, $2, $3)
+    INSERT INTO songs (uuid, creator_uuid, title, created_date)
+        values($1, $2, $3, $4)
         RETURNING *
     ",
         )
         .bind(song.uuid)
+        .bind(song.creator_uuid)
         .bind(song.title.clone())
         .bind(song.created_date)
         .fetch_one(&self.pool)
         .await
         .unwrap();
 
-        print!("{:?}", returned_song);
-
-        Ok(song)
+        Ok(returned_song)
     }
 }
 
@@ -100,9 +101,11 @@ impl ModelController {
 
 #[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
 pub struct Artist {
-    pub artist_id: i64,
+    pub uuid: Uuid,
+    pub creator_uuid: Uuid,
     pub artist_name: String,
     pub real_name: Option<String>,
+    pub created_date: DateTime<Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -112,15 +115,15 @@ pub struct ArtistForCreate {
 }
 
 impl ModelController {
-    pub async fn get_artist(&self, Path(id): Path<i64>) -> Result<Artist> {
+    pub async fn get_artist(&self, Path(uuid): Path<Uuid>) -> Result<Artist> {
         println!("->> {:<12} - get_artist", "GET");
 
         let artist = sqlx::query_as::<_, Artist>(
             "
-    SELECT * FROM artists WHERE artist_id = $1
+    SELECT * FROM artists WHERE uuid = $1
     ",
         )
-        .bind(id)
+        .bind(uuid)
         .fetch_one(&self.pool)
         .await
         .unwrap();
@@ -143,22 +146,38 @@ impl ModelController {
         Ok(artists)
     }
 
-    pub async fn create_artist(&self, Form(input): Form<ArtistForCreate>) -> Result<Artist> {
+    pub async fn create_artist(
+        &self,
+        ctx: Ctx,
+        Form(input): Form<ArtistForCreate>,
+    ) -> Result<Artist> {
         println!("->> {:<12} - post_artist", "POST");
-        let artist = sqlx::query_as::<_, Artist>(
+
+        let artist = Artist {
+            uuid: Uuid::new_v4(),
+            creator_uuid: ctx.user_id(),
+            artist_name: input.artist_name,
+            real_name: input.real_name,
+            created_date: Utc::now(),
+        };
+
+        let returned_artist = sqlx::query_as::<_, Artist>(
             "
-            INSERT INTO artists (artist_name, real_name)
-            values($1, $2)
+            INSERT INTO artists (uuid, creator_uuid, artist_name, real_name, created_date)
+            values($1, $2, $3, $4, $5)
             RETURNING *
             ",
         )
-        .bind(input.artist_name)
-        .bind(input.real_name.unwrap())
+        .bind(artist.uuid)
+        .bind(artist.creator_uuid)
+        .bind(artist.artist_name)
+        .bind(artist.real_name.unwrap())
+        .bind(artist.created_date)
         .fetch_one(&self.pool)
         .await
         .unwrap();
 
-        Ok(artist)
+        Ok(returned_artist)
     }
 }
 

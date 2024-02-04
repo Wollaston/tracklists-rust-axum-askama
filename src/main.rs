@@ -6,6 +6,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
+pub mod ctx;
 pub mod db;
 pub mod error;
 pub mod model;

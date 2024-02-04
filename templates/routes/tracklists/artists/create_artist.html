@@ -1,6 +1,6 @@
 {% extends "routes/tracklists.html" %} {% block tracklists_main %}
 <div id="create-artist-form" class="flex flex-col">
-  <form action="/tracklists/artists/create" method="post">
+  <form action="/api/tracklists/artists/create" method="post">
     <label for="artist_name">
         Enter Artist Name:
         <input type="text" name="artist_name">
@@ -11,7 +11,7 @@
         <input type="text" name="real_name">
     </label>
 
-    <button hx-trigger="click" hx-post="/tracklists/artists/create" hx-target="#create-artist-form" hx-swap="outHTML" type="submit">Submit</button>
+    <button hx-trigger="click" hx-post="/api/tracklists/artists/create" hx-target="#create-artist-form" hx-swap="outHTML" type="submit">Submit</button>
 </form>
 </div>
 {% endblock tracklists_main %}
