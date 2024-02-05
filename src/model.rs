@@ -36,7 +36,7 @@ pub struct SongForCreate {
 }
 
 impl ModelController {
-    pub async fn get_song(&self, Path(uuid): Path<Uuid>) -> Result<Song> {
+    pub async fn get_song(&self, _ctx: Ctx, Path(uuid): Path<Uuid>) -> Result<Song> {
         println!("->> {:<12} - get_song", "GET");
 
         let song = sqlx::query_as::<_, Song>(
@@ -52,7 +52,7 @@ impl ModelController {
         Ok(song)
     }
 
-    pub async fn get_songs(&self) -> Result<Vec<Song>> {
+    pub async fn get_songs(&self, _ctx: Ctx) -> Result<Vec<Song>> {
         println!("->> {:<12} - get_songs", "GET");
         let songs = sqlx::query_as::<_, Song>(
             "
@@ -115,7 +115,7 @@ pub struct ArtistForCreate {
 }
 
 impl ModelController {
-    pub async fn get_artist(&self, Path(uuid): Path<Uuid>) -> Result<Artist> {
+    pub async fn get_artist(&self, _ctx: Ctx, Path(uuid): Path<Uuid>) -> Result<Artist> {
         println!("->> {:<12} - get_artist", "GET");
 
         let artist = sqlx::query_as::<_, Artist>(
@@ -131,7 +131,7 @@ impl ModelController {
         Ok(artist)
     }
 
-    pub async fn get_artists(&self) -> Result<Vec<Artist>> {
+    pub async fn get_artists(&self, _ctx: Ctx) -> Result<Vec<Artist>> {
         println!("->> {:<12} - get_artists", "GET");
 
         let artists = sqlx::query_as::<_, Artist>(

@@ -50,10 +50,11 @@ pub struct CreateArtistTemplate;
 
 pub async fn artist_detail_handler(
     State(state): State<AppState>,
+    ctx: Ctx,
     uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - artist_detail_handler", "HANDLER");
-    let artist = state.mc.get_artist(uuid).await.unwrap();
+    let artist = state.mc.get_artist(ctx, uuid).await.unwrap();
 
     ArtistDetailTemplate { artist }
 }
@@ -73,9 +74,9 @@ pub async fn create_artist_handler() -> impl IntoResponse {
     CreateArtistTemplate
 }
 
-pub async fn artists_handler(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn artists_handler(ctx: Ctx, State(state): State<AppState>) -> impl IntoResponse {
     println!("->> {:<12} - artists_handler", "HANDLER");
-    let artists = state.mc.get_artists().await.unwrap();
+    let artists = state.mc.get_artists(ctx).await.unwrap();
 
     ArtistsTemplate { artists }
 }

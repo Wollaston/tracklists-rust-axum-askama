@@ -51,10 +51,10 @@ pub struct SongDetailTemplate {
 #[template(path = "routes/tracklists/songs/create_song.html")]
 pub struct CreateSongTemplate;
 
-async fn songs_handler(State(state): State<AppState>) -> impl IntoResponse {
+async fn songs_handler(State(state): State<AppState>, ctx: Ctx) -> impl IntoResponse {
     println!("->> {:<12} - songs_handler", "HANDLER");
 
-    let songs: Vec<Song> = state.mc.get_songs().await.unwrap();
+    let songs: Vec<Song> = state.mc.get_songs(ctx).await.unwrap();
 
     SongsTemplate { songs }
 }
@@ -79,10 +79,11 @@ async fn create_song_post(
 
 pub async fn song_detail_handler(
     State(state): State<AppState>,
+    ctx: Ctx,
     uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
     println!("->> {:<12} - song_detail_handler", "HANDLER");
-    let song = state.mc.get_song(uuid).await.unwrap();
+    let song = state.mc.get_song(ctx, uuid).await.unwrap();
 
     SongDetailTemplate { song }
 }

@@ -36,6 +36,10 @@ async fn main() -> Result<()> {
         .route_service("/htmx.js", ServeFile::new("public/scripts/htmx.min.js"))
         .fallback(web::routes::not_found::not_found_handler)
         .layer(middleware::map_response(main_response_mapper))
+        .layer(middleware::from_fn_with_state(
+            app_state.clone(),
+            web::middleware::auth::mw_ctx_resolver,
+        ))
         .layer(CookieManagerLayer::new())
         .layer(TraceLayer::new_for_http())
         .with_state(app_state);
