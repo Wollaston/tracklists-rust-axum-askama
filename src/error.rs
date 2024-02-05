@@ -1,9 +1,11 @@
 use askama_axum::{IntoResponse, Response};
 use axum::http::StatusCode;
+use serde::Serialize;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
-#[derive(Debug, Clone, strum_macros::AsRefStr)]
+#[derive(Debug, Clone, Serialize, strum_macros::AsRefStr)]
+#[serde(tag = "type", content = "data")]
 pub enum Error {
     LoginFail,
     DBError,

@@ -36,6 +36,7 @@ uuid = { version = "1.7.0", features = ["v4", "fast-rng", "serde"] }
 chrono = { version = "0.4.33", features = ["serde"] }
 lazy-regex = "3"
 strum_macros = "0.26"
+serde_with = "3.6"
 
 [dev-dependencies]
 httpc-test = "0.1.9"

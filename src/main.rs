@@ -1,10 +1,8 @@
 use askama_axum::IntoResponse;
-use axum::{
-    extract::FromRef,
-    middleware,
-    response::{self, Response},
-    Json, Router,
-};
+use axum::http::Method;
+use axum::http::Uri;
+use axum::{extract::FromRef, middleware, response::Response, Json, Router};
+use ctx::Ctx;
 use model::ModelController;
 use serde_json::json;
 use tower_cookies::CookieManagerLayer;
@@ -16,6 +14,7 @@ use tower_http::{
 pub mod ctx;
 pub mod db;
 pub mod error;
+pub mod log;
 pub mod model;
 pub mod web;
 
@@ -60,7 +59,12 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn main_response_mapper(res: Response) -> Response {
+async fn main_response_mapper(
+    ctx: Option<Ctx>,
+    uri: Uri,
+    req_method: Method,
+    res: Response,
+) -> Response {
     println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
     let uuid = uuid::Uuid::new_v4();
 
@@ -84,8 +88,10 @@ async fn main_response_mapper(res: Response) -> Response {
             // Build the new response from the client_error_body
             (*status_code, Json(client_error_body)).into_response()
         });
-
-    println!("  ->> server log line - {uuid} - Error: {service_error:?}");
+    // Build and log the server log line.
+    let client_error = client_status_error.unzip().1;
+    // TODO: Need to hander if log_request fail (but should not fail request)
+    let _ = log::log_request(uuid, req_method, uri, ctx, service_error, client_error).await;
 
     println!();
     error_response.unwrap_or(res)
