@@ -1,0 +1,7 @@
+# Cargo config file
+
+# Environment variables for all 'cargo ...' commands
+[env]
+
+# Scope down tracing 
+RUST_LOG = "tracklists=debug"

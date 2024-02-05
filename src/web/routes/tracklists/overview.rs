@@ -1,6 +1,7 @@
 use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
+use tracing::info;
 
 use crate::AppState;
 
@@ -13,6 +14,6 @@ pub fn routes() -> Router<AppState> {
 struct TracklistsOverviewTemplate;
 
 async fn tracklists_overview_handler() -> impl IntoResponse {
-    println!("->> {:<12} - tracklists_overview_handler", "HANDLER");
+    info!("{:<12} - tracklists_overview_handler", "HANDLER");
     TracklistsOverviewTemplate
 }

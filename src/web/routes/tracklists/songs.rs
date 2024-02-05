@@ -5,6 +5,7 @@ use axum::{
     routing::{get, post},
     Form, Router,
 };
+use tracing::info;
 
 use crate::{
     ctx::Ctx,
@@ -52,7 +53,7 @@ pub struct SongDetailTemplate {
 pub struct CreateSongTemplate;
 
 async fn songs_handler(State(state): State<AppState>, ctx: Ctx) -> impl IntoResponse {
-    println!("->> {:<12} - songs_handler", "HANDLER");
+    info!("{:<12} - songs_handler", "HANDLER");
 
     let songs: Vec<Song> = state.mc.get_songs(ctx).await.unwrap();
 
@@ -60,7 +61,7 @@ async fn songs_handler(State(state): State<AppState>, ctx: Ctx) -> impl IntoResp
 }
 
 async fn create_song_handler() -> impl IntoResponse {
-    println!("->> {:<12} - create_songs_handler", "HANDLER");
+    info!("{:<12} - create_songs_handler", "HANDLER");
 
     CreateSongTemplate
 }
@@ -70,7 +71,7 @@ async fn create_song_post(
     ctx: Ctx,
     input: Form<SongForCreate>,
 ) -> impl IntoResponse {
-    println!("->> {:<12} - create_song_handler", "HANDLER");
+    info!("{:<12} - create_song_handler", "HANDLER");
 
     let song = state.mc.create_song(ctx, input).await.unwrap();
 
@@ -82,7 +83,7 @@ pub async fn song_detail_handler(
     ctx: Ctx,
     uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
-    println!("->> {:<12} - song_detail_handler", "HANDLER");
+    info!("{:<12} - song_detail_handler", "HANDLER");
     let song = state.mc.get_song(ctx, uuid).await.unwrap();
 
     SongDetailTemplate { song }

@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 #[tokio::test]
-async fn test_response_of_failed_login() -> Result<()> {
+pub async fn test_response_of_failed_login() -> Result<()> {
     let params = [("username", "Test"), ("password", "Test")];
     let client = reqwest::Client::new();
     let res = client
@@ -19,7 +19,7 @@ async fn test_response_of_failed_login() -> Result<()> {
 }
 
 #[tokio::test]
-async fn test_root() -> Result<()> {
+pub async fn test_root() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
 
     hc.do_get("/").await?.print_no_body().await?;

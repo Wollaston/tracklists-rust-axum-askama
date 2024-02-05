@@ -6,6 +6,7 @@ use axum::response::Response;
 use axum::{body::Body, extract::Request, middleware::Next};
 use lazy_regex::regex_captures;
 use tower_cookies::{Cookie, Cookies};
+use tracing::info;
 
 use crate::ctx::Ctx;
 use crate::web::AUTH_TOKEN;
@@ -15,7 +16,7 @@ pub async fn mw_require_auth(
     request: Request<Body>,
     next: Next,
 ) -> Result<Response> {
-    println!("->> {:<12} - mw_require_auth", "MIDDLEWARE");
+    info!("{:<12} - mw_require_auth", "MIDDLEWARE");
 
     ctx?;
 
@@ -28,7 +29,7 @@ pub async fn mw_ctx_resolver(
     mut req: Request<Body>,
     next: Next,
 ) -> Result<Response> {
-    println!("->> {:<12} - mw_ctx_resolver", "MIDDLEWARE");
+    info!("{:<12} - mw_ctx_resolver", "MIDDLEWARE");
 
     let auth_token = cookies.get(AUTH_TOKEN).map(|c| c.value().to_string());
 
@@ -63,7 +64,7 @@ impl<S: Send + Sync> FromRequestParts<S> for Ctx {
         parts: &mut http::request::Parts,
         _state: &S,
     ) -> std::prelude::v1::Result<Self, Self::Rejection> {
-        println!("->> {:<12} - Ctx", "EXTRACTOR");
+        info!("{:<12} - Ctx", "EXTRACTOR");
 
         parts
             .extensions

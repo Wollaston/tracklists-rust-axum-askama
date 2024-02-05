@@ -3,6 +3,7 @@ use askama_axum::IntoResponse;
 use axum::{routing::get, Form, Router};
 use serde::Deserialize;
 use tower_cookies::{Cookie, Cookies};
+use tracing::info;
 
 use crate::{web::AUTH_TOKEN, AppState};
 
@@ -15,7 +16,7 @@ pub fn routes() -> Router<AppState> {
 pub struct LoginTemplate;
 
 pub async fn login_handler() -> impl IntoResponse {
-    println!("->> {:<12} - login_handler", "HANDLER");
+    info!("{:<12} - login_handler", "HANDLER");
     LoginTemplate
 }
 
@@ -28,7 +29,7 @@ pub struct LoginFailTemplate;
 pub struct LoginSuccessTemplate;
 
 async fn api_login(cookies: Cookies, Form(payload): Form<LoginPayload>) -> impl IntoResponse {
-    println!("->> {:<12} - api_login", "HANDLER");
+    info!("{:<12} - api_login", "HANDLER");
 
     // TODO: Implement real db/auth logic
 
@@ -38,7 +39,7 @@ async fn api_login(cookies: Cookies, Form(payload): Form<LoginPayload>) -> impl 
         // TODO: Implement a real auth-token generation/signature
         let user_id = uuid::Uuid::new_v4();
         cookies.add(Cookie::new(AUTH_TOKEN, format!("{}.exp.sign", user_id)));
-        println!("{:?}", cookies.get(AUTH_TOKEN));
+        info!("{:?}", cookies.get(AUTH_TOKEN));
 
         LoginSuccessTemplate.into_response()
     }

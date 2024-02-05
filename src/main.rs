@@ -10,6 +10,9 @@ use tower_http::{
     services::{ServeDir, ServeFile},
     trace::TraceLayer,
 };
+use tracing::debug;
+use tracing::info;
+use tracing_subscriber::EnvFilter;
 
 pub mod ctx;
 pub mod db;
@@ -26,7 +29,11 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .without_time()
+        .with_target(true)
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
 
     let pool = db::db().await.expect("Could not connect to sqlite DB.");
 
@@ -54,7 +61,7 @@ async fn main() -> Result<()> {
 
     let listener = tokio::net::TcpListener::bind(port).await.unwrap();
 
-    println!("->> Listening on {port}\n");
+    info!("connected to {:?}", port);
     axum::serve(listener, app).await.unwrap();
     Ok(())
 }
@@ -65,7 +72,7 @@ async fn main_response_mapper(
     req_method: Method,
     res: Response,
 ) -> Response {
-    println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
+    debug!("{:<12} - main_response_mapper", "RES_MAPPER");
     let uuid = uuid::Uuid::new_v4();
 
     // Get Server Error
@@ -83,7 +90,7 @@ async fn main_response_mapper(
             }
             });
 
-            println!("  ->> client_error_body: {client_error_body}");
+            debug!("  client_error_body: {client_error_body}");
 
             // Build the new response from the client_error_body
             (*status_code, Json(client_error_body)).into_response()
@@ -93,6 +100,7 @@ async fn main_response_mapper(
     // TODO: Need to hander if log_request fail (but should not fail request)
     let _ = log::log_request(uuid, req_method, uri, ctx, service_error, client_error).await;
 
-    println!();
+    debug!("\n");
+
     error_response.unwrap_or(res)
 }
