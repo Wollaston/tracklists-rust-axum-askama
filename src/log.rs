@@ -3,7 +3,7 @@ use http::{Method, Uri};
 use serde::Serialize;
 use serde_json::{json, Value};
 use serde_with::skip_serializing_none;
-use tracing::info;
+use tracing::debug;
 
 #[skip_serializing_none]
 #[derive(Serialize)]
@@ -55,7 +55,7 @@ pub async fn log_request(
         error_data,
     };
 
-    info!("log_request: \n{}", json!(log_line));
+    debug!("log_request: \n{}", json!(log_line));
 
     // TODO: - Send to logging platform.
 

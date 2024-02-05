@@ -5,3 +5,10 @@
 
 # Scope down tracing 
 RUST_LOG = "tracklists=debug"
+
+# -- Service Environment Variables
+# In deployment, should be managed by container
+#
+# # Config Map
+
+SERVICE_TEMPLATES = "templates/"

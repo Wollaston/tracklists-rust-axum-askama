@@ -11,9 +11,9 @@ A basic tracklists website built using:
 - quick-dev tests:
 
 ```bash
-cargo watch -q -c -w tests/ -x "test -q quick_dev -- --nocapture"
+cargo watch -q -c -w tests/ -x "test -- --nocapture"
 ```
 
 ```bash
-cargo watch -q -c -w src/ -x "run -- --nocapture"
+cargo watch -q -c -w src/ -w .cargo/ -x "run -- --nocapture"
 ```

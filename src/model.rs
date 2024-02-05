@@ -3,7 +3,7 @@ use axum::{extract::Path, Form};
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
-use tracing::info;
+use tracing::debug;
 use uuid::Uuid;
 
 // region: --- Model
@@ -38,7 +38,7 @@ pub struct SongForCreate {
 
 impl ModelController {
     pub async fn get_song(&self, _ctx: Ctx, Path(uuid): Path<Uuid>) -> Result<Song> {
-        info!("{:<12} - get_song", "GET");
+        debug!("{:<12} - get_song", "GET");
 
         let song = sqlx::query_as::<_, Song>(
             "
@@ -54,7 +54,7 @@ impl ModelController {
     }
 
     pub async fn get_songs(&self, _ctx: Ctx) -> Result<Vec<Song>> {
-        info!("{:<12} - get_songs", "GET");
+        debug!("{:<12} - get_songs", "GET");
         let songs = sqlx::query_as::<_, Song>(
             "
     SELECT * FROM songs 
@@ -68,7 +68,7 @@ impl ModelController {
     }
 
     pub async fn create_song(&self, ctx: Ctx, Form(input): Form<SongForCreate>) -> Result<Song> {
-        info!("{:<12} - create_song", "POST");
+        debug!("{:<12} - create_song", "POST");
 
         let song = Song {
             uuid: Uuid::new_v4(),
@@ -117,7 +117,7 @@ pub struct ArtistForCreate {
 
 impl ModelController {
     pub async fn get_artist(&self, _ctx: Ctx, Path(uuid): Path<Uuid>) -> Result<Artist> {
-        info!("{:<12} - get_artist", "GET");
+        debug!("{:<12} - get_artist", "GET");
 
         let artist = sqlx::query_as::<_, Artist>(
             "
@@ -133,7 +133,7 @@ impl ModelController {
     }
 
     pub async fn get_artists(&self, _ctx: Ctx) -> Result<Vec<Artist>> {
-        info!("{:<12} - get_artists", "GET");
+        debug!("{:<12} - get_artists", "GET");
 
         let artists = sqlx::query_as::<_, Artist>(
             "
@@ -152,7 +152,7 @@ impl ModelController {
         ctx: Ctx,
         Form(input): Form<ArtistForCreate>,
     ) -> Result<Artist> {
-        info!("{:<12} - post_artist", "POST");
+        debug!("{:<12} - post_artist", "POST");
 
         let artist = Artist {
             uuid: Uuid::new_v4(),

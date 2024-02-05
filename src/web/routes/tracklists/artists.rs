@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post},
     Form, Router,
 };
-use tracing::info;
+use tracing::debug;
 
 use crate::{ctx::Ctx, model::Artist};
 use crate::{model::ArtistForCreate, AppState};
@@ -54,7 +54,7 @@ pub async fn artist_detail_handler(
     ctx: Ctx,
     uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
-    info!("{:<12} - artist_detail_handler", "HANDLER");
+    debug!("{:<12} - artist_detail_handler", "HANDLER");
     let artist = state.mc.get_artist(ctx, uuid).await.unwrap();
 
     ArtistDetailTemplate { artist }
@@ -71,12 +71,12 @@ pub async fn create_artist_post(
 }
 
 pub async fn create_artist_handler() -> impl IntoResponse {
-    info!("{:<12} - create_artist_handler", "HANDLER");
+    debug!("{:<12} - create_artist_handler", "HANDLER");
     CreateArtistTemplate
 }
 
 pub async fn artists_handler(ctx: Ctx, State(state): State<AppState>) -> impl IntoResponse {
-    info!("{:<12} - artists_handler", "HANDLER");
+    debug!("{:<12} - artists_handler", "HANDLER");
     let artists = state.mc.get_artists(ctx).await.unwrap();
 
     ArtistsTemplate { artists }

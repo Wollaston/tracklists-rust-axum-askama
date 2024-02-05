@@ -1,4 +1,7 @@
 -- Add migration script here
+DROP TABLE IF EXISTS artists;
+DROP TABLE IF EXISTS songs;
+
 CREATE TABLE IF NOT EXISTS artists (
 	uuid TEXT PRIMARY KEY,
   creator_uuid TEXT NOT NULL,

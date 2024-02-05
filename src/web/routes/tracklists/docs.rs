@@ -1,7 +1,7 @@
 use askama::Template;
 use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
-use tracing::info;
+use tracing::debug;
 
 use crate::AppState;
 
@@ -14,6 +14,6 @@ pub fn routes() -> Router<AppState> {
 struct DocsTemplate;
 
 async fn docs_handler() -> impl IntoResponse {
-    info!("{:<12} - docs_handler", "HANDLER");
+    debug!("{:<12} - docs_handler", "HANDLER");
     DocsTemplate
 }

@@ -14,14 +14,17 @@ use tracing::debug;
 use tracing::info;
 use tracing_subscriber::EnvFilter;
 
-pub mod ctx;
-pub mod db;
-pub mod error;
-pub mod log;
-pub mod model;
-pub mod web;
+mod config;
+mod ctx;
+mod db;
+mod error;
+mod log;
+mod model;
+mod web;
 
 pub use self::error::{Error, Result};
+pub use config::config;
+
 #[derive(Clone, FromRef)]
 pub struct AppState {
     pub mc: ModelController,
@@ -31,7 +34,7 @@ pub struct AppState {
 async fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .without_time()
-        .with_target(true)
+        .with_target(false)
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
