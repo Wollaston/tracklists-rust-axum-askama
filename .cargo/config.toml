@@ -9,6 +9,11 @@ RUST_LOG = "tracklists=debug"
 # -- Service Environment Variables
 # In deployment, should be managed by container
 #
+##  --  Secrets
+# For localhost / dev only
+DATABASE_URL = "sqlite:tracklists.db"
+
+#
 # # Config Map
 
 SERVICE_TEMPLATES = "templates/"

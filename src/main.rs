@@ -3,7 +3,7 @@ use axum::http::Method;
 use axum::http::Uri;
 use axum::{extract::FromRef, middleware, response::Response, Json, Router};
 use ctx::Ctx;
-use model::ModelController;
+use model::ModelManager;
 use serde_json::json;
 use tower_cookies::CookieManagerLayer;
 use tower_http::{
@@ -16,7 +16,6 @@ use tracing_subscriber::EnvFilter;
 
 mod config;
 mod ctx;
-mod db;
 mod error;
 mod log;
 mod model;
@@ -27,7 +26,7 @@ pub use config::config;
 
 #[derive(Clone, FromRef)]
 pub struct AppState {
-    pub mc: ModelController,
+    pub mm: ModelManager,
 }
 
 #[tokio::main]
@@ -38,10 +37,8 @@ async fn main() -> Result<()> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let pool = db::db().await.expect("Could not connect to sqlite DB.");
-
     let app_state = AppState {
-        mc: ModelController::new(pool).await.unwrap(),
+        mm: ModelManager::new().await.expect("Error creating app state"),
     };
 
     let app = Router::new()

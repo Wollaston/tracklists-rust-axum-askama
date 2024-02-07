@@ -9,7 +9,7 @@ use tracing::debug;
 
 use crate::{
     ctx::Ctx,
-    model::{Song, SongForCreate},
+    model::songs::{Song, SongForCreate, SongsBmc},
     AppState,
 };
 
@@ -55,7 +55,7 @@ pub struct CreateSongTemplate;
 async fn songs_handler(State(state): State<AppState>, ctx: Ctx) -> impl IntoResponse {
     debug!("{:<12} - songs_handler", "HANDLER");
 
-    let songs: Vec<Song> = state.mc.get_songs(ctx).await.unwrap();
+    let songs: Vec<Song> = SongsBmc::get_songs(ctx, &state.mm).await.unwrap();
 
     SongsTemplate { songs }
 }
@@ -73,7 +73,7 @@ async fn create_song_post(
 ) -> impl IntoResponse {
     debug!("{:<12} - create_song_handler", "HANDLER");
 
-    let song = state.mc.create_song(ctx, input).await.unwrap();
+    let song = SongsBmc::create_song(ctx, &state.mm, input).await.unwrap();
 
     SongTemplate { song }
 }
@@ -84,7 +84,7 @@ pub async fn song_detail_handler(
     uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
     debug!("{:<12} - song_detail_handler", "HANDLER");
-    let song = state.mc.get_song(ctx, uuid).await.unwrap();
+    let song = SongsBmc::get_song(ctx, &state.mm, uuid).await.unwrap();
 
     SongDetailTemplate { song }
 }

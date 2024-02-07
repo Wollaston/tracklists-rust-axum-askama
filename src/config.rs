@@ -14,12 +14,15 @@ pub fn config() -> &'static Config {
 #[allow(non_snake_case)]
 pub struct Config {
     pub TEMPLATES: String,
+    pub DATABASE_URL: String,
 }
 
 impl Config {
     fn load_from_env() -> Result<Config> {
         Ok(Config {
+            //
             TEMPLATES: get_env("SERVICE_TEMPLATES")?,
+            DATABASE_URL: get_env("DATABASE_URL")?,
         })
     }
 }

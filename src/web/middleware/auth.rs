@@ -1,4 +1,4 @@
-use crate::model::ModelController;
+use crate::model::ModelManager;
 use crate::{Error, Result};
 use axum::async_trait;
 use axum::extract::{FromRequestParts, State};
@@ -24,7 +24,7 @@ pub async fn mw_require_auth(
 }
 
 pub async fn mw_ctx_resolver(
-    _mc: State<ModelController>,
+    _mc: State<ModelManager>,
     cookies: Cookies,
     mut req: Request<Body>,
     next: Next,

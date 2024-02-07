@@ -7,8 +7,11 @@ use axum::{
 };
 use tracing::debug;
 
-use crate::{ctx::Ctx, model::Artist};
-use crate::{model::ArtistForCreate, AppState};
+use crate::{
+    ctx::Ctx,
+    model::artists::{Artist, ArtistsBmc},
+};
+use crate::{model::artists::ArtistForCreate, AppState};
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -55,7 +58,7 @@ pub async fn artist_detail_handler(
     uuid: Path<uuid::Uuid>,
 ) -> impl IntoResponse {
     debug!("{:<12} - artist_detail_handler", "HANDLER");
-    let artist = state.mc.get_artist(ctx, uuid).await.unwrap();
+    let artist = ArtistsBmc::get_artist(ctx, &state.mm, uuid).await.unwrap();
 
     ArtistDetailTemplate { artist }
 }
@@ -65,7 +68,9 @@ pub async fn create_artist_post(
     ctx: Ctx,
     input: Form<ArtistForCreate>,
 ) -> impl IntoResponse {
-    let artist = state.mc.create_artist(ctx, input).await.unwrap();
+    let artist = ArtistsBmc::create_artist(ctx, &state.mm, input)
+        .await
+        .unwrap();
 
     ArtistTemplate { artist }
 }
@@ -77,7 +82,7 @@ pub async fn create_artist_handler() -> impl IntoResponse {
 
 pub async fn artists_handler(ctx: Ctx, State(state): State<AppState>) -> impl IntoResponse {
     debug!("{:<12} - artists_handler", "HANDLER");
-    let artists = state.mc.get_artists(ctx).await.unwrap();
+    let artists = ArtistsBmc::get_artists(ctx, &state.mm).await.unwrap();
 
     ArtistsTemplate { artists }
 }
